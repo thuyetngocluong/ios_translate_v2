@@ -1,12 +1,25 @@
-import { configureStore } from '@reduxjs/toolkit';
-import languageTranslateRedux from "./LanguageTranslateRedux";
-import {LanguageTranslate} from "../models/LanguageItem";
+import { applyMiddleware, configureStore } from '@reduxjs/toolkit';
+import { User } from '../models/User';
+import userRedux from './user.redux';
+import keyModelsRedux, { KeyState } from './key.slice';
+import { KeyModel } from '../models/Key';
+import reloadRedux, { ReloadState } from './reload.slice';
+import { useDispatch } from 'react-redux';
 
 export interface RootState {
-  languageTranslate: LanguageTranslate[]; // Define the type for the slice state
+  user: User | null
+  keyModels: KeyState
+  reloadState: ReloadState
 }
-export default configureStore({
+
+const store = configureStore({
   reducer: {
-    languageTranslate: languageTranslateRedux,
+    user: userRedux,
+    keyModels: keyModelsRedux,
+    realoadState: reloadRedux
   },
 });
+
+export type AppDispatch = typeof store.dispatch
+export const useAppDispatch = useDispatch.withTypes<AppDispatch>() 
+export default store

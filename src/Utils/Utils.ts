@@ -1,74 +1,115 @@
 import * as XLSX from "xlsx";
 import axios from "axios";
-import ExcelResult from "../models/ExcelResult";
-import {LanguageTranslate} from "../models/LanguageItem";
+import AuthService from "../services/AuthService";
+import LanguageService from "../services/LanguageService";
+import { KeyModel } from "../models/Key";
+import KeyService from "../services/KeyService";
+
+
 export class Utils {
   static shared = new Utils()
 
   remakeValue(value: string): string {
-    return value.replace(/% @/g, "%@")
+
+    let make = value.replace(/% @/g, "%@")
       .replace(/％@/g, "%@")
       .replace(/％ @g/, "%@")
       .replace(/٪@/g, "%@")
       .replace(/٪ @/g, "%@")
-      .replace(/\/ n/g, "/n")
+      .replace(/\\ n/ig, "\n")
+      .replace(/\\n/ig, "\n")
+
+    return  make
   }
-  exportToStringCatalog(localizations: LanguageTranslate[]) {
+
+  random(): number {
+    var min = Math.ceil(1);
+    var max = Math.floor(10000);
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+  }
+
+  // async syncToServer(languageTranslates: LanguageTranslate[]) {
+
+  //   var english = languageTranslates.find(e => e.languageCode == 'en')
+
+  //   for (let i = 0; i < languageTranslates.length; i++) {
+  //     var languageTranslate = languageTranslates[i]
+  //     var languageCode = languageTranslate.languageCode
+      
+  //     for(let j = 0; j < languageTranslate.translate.length; j++) {
+  //       var item = languageTranslate.translate[j]
+  //       var key = item.key
+  //       var translated = item.value
+  //       let source = english?.translate.find(e => e.key === key)?.value || ""
+  //       try {
+  //         await TranslateService.shared.createOrUpdate({
+  //           key: key,
+  //           source: source,
+  //           translated: translated,
+  //           unique: "",
+  //           application: AuthService.shared.currentUser?.applications[0] as any,
+  //           language: LanguageService.shared.languages.find(e => e.language_code === languageCode) as any
+  //         })
+  //       } catch {
+
+  //       }
+  //     }
+  //   }
+  // }
+
+  async exportToStringCatalog() {
+    try {
+      const response = await KeyService.shared.fetch()
+      if (response && response.length !== 0) {
+        this._exportToStringCatalog(response)
+      }
+    } catch {
+
+    }
+  }
+
+  private _exportToStringCatalog(keyModels: KeyModel[]) {
     let result = {
       "sourceLanguage": "en",
       "strings": {} as any,
       "version": "1.0"
     }
-    let mapping = {} as any
-    localizations.forEach(localization => {
-      let result = {} as any
-      localization.translate.forEach(item => {
-        result[item.key] = item.value
-      })
-      mapping[localization.languageCode] = result
-    })
-    let keys = localizations[0].translate.map(e => e.key)
-    let languageCodes = localizations.map(e => e.languageCode)
-
-    console.log("LanguageCode", mapping)
-
-    keys.forEach(key => {
-        result.strings[key] = {
+    
+    keyModels.forEach(key => {
+        result.strings[key.key] = {
           "extractionState" : "manual",
           "localizations": {}
         }
         let rs = {} as any
-        languageCodes.forEach(languageCode => {
+        key.translates.forEach(tranlsate => {
           let data = {
             "stringUnit" : {
               "state" : "translated",
-              "value" : (mapping[languageCode] || {} as any)[key] || ""
+              "value" : tranlsate.value
             }
           }
-          rs[languageCode] = data
+          rs[tranlsate.language.language_code] = data
 
-          if (languageCode === "nb" || languageCode === "no") {
+          if (tranlsate.language.language_code === "nb" || tranlsate.language.language_code === "no") {
             rs["nb-NO"] = data
             rs["nb"] = data
             rs["no"] = data
-            console.log(rs)
           }
-          if (languageCode === "pt") {
+          if (tranlsate.language.language_code === "pt") {
             rs["pt-PT"] = data
           }
         })
 
-        result.strings[key]["localizations"] = rs
+        result.strings[key.key]["localizations"] = rs
 
     })
 
-    console.log(result)
     this.triggerDownload(result)
   }
 
   triggerDownload(results: any) {
-    const data = JSON.stringify(results);
-    const blob = new Blob([data], { type: 'text/plain' });
+    const data = JSON.stringify(results, null, 2);
+    const blob = new Blob([data], { type: 'application/json' })
 
     // Create a URL for the blob
     const url = window.URL.createObjectURL(blob);
@@ -83,5 +124,13 @@ export class Utils {
     // Clean up the URL and link
     window.URL.revokeObjectURL(url);
     document.body.removeChild(link);
+  }
+
+ chunkArray<T>(array: T[], size: number): T[][] {
+    const chunkedArray = [];
+    for (let i = 0; i < array.length; i += size) {
+      chunkedArray.push(array.slice(i, i + size));
+    }
+    return chunkedArray;
   }
 }
