@@ -23,11 +23,11 @@ class LanguageService {
   languages: Language[] = [];
 
   async fetchLanguages(): Promise<Language[]> {
-    var page = 1;
-    var languages: Language[] = [];
+    let page = 1;
+    let languages: Language[] = [];
     while (true) {
       let response = await this._fetchLanguages(page);
-      if (response.length == 0) {
+      if (response.length === 0) {
         break;
       }
       languages = languages.concat(response);
@@ -57,13 +57,10 @@ class LanguageService {
     process: (text: string) => void
   ): Promise<any> {
     const total = texts.length;
-    var current = 0;
-    const fillArray = (array: string[], size: number) => {
-      array.push(...Array.from({ length: size }, () => ""));
-      return array.slice(0, size);
-    };
+    let current = 0;
+
     const chunked = Utils.shared.chunkArray(texts, 10);
-    var result: any = {};
+    const result: any = {};
 
     process(`Translating ${current}/${total}`);
     for (let i = 0; i < chunked.length; i++) {
@@ -102,7 +99,7 @@ class LanguageService {
     tryCount: number = 1
   ): Promise<any> {
     if (tryCount < 0) {
-      var rs: any = {}
+      const rs: any = {};
       languageCodes.forEach(languageCode => {
         rs[languageCode] = ""
       })

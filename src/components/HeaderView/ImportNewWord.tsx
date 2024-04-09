@@ -8,15 +8,15 @@ import { RootState } from "../../redux/store";
 import { KeyModel } from "../../models/Key";
 import { Language } from "../../models/Language";
 import ReviewResult from "../ReviewResult/ReviewResult";
+import Const from "../../Utils/Const";
 
-function ModalImportNewWord(props: { onTranslateSuccess: (languages: Language[], keyModels: KeyModel[]) => void }) {
-  const [isModalOpen, setIsModalOpen] = useState(true);
+function ModalImportNewWord(props: { onTranslateSuccess: (languages: Language[], keyModels: KeyModel[]) => void, onCancel: () => void  }) {
   const [isLoading, setIsLoading] = useState(false);
   const [okText, setOKText] = useState("OK")
   const [sentences, setSentences] = useState("");
 
   const preferred_languages = useSelector(
-    (state: RootState) => state.user?.preferred_languages || []
+    (state: RootState) => state.selectedApplication.value?.languages || []
   );
 
   const onInputChange = (e: any) => {
@@ -37,21 +37,26 @@ function ModalImportNewWord(props: { onTranslateSuccess: (languages: Language[],
       .then((response) => {
         const languageCodes = Object.keys(response)
         const languages = preferred_languages.filter(l => languageCodes.includes(l.language_code))
-        const keyModels: KeyModel[] = sources.map((k, index) => {
-          return {
-            id: "",
-            key: k,
-            unique: "",
-            application: AuthService.shared.currentUser?.applications[0] as any,
-            translates: languages.map(l => {
-              return {
-                language: l,
-                value: response[l.language_code][index] || ""
-              }
-            })
-          }
-        })
-        props.onTranslateSuccess(languages, keyModels);
+        const application = AuthService.shared.currentUser?.applications.find(e => e.id.toString() === Const.currentApplicationID())
+        if (application) {
+          const keyModels: KeyModel[] = sources.map((k, index) => {
+            return {
+              id: "",
+              key: k,
+              unique: "",
+              application: application,
+              translates: languages.map(l => {
+                return {
+                  language: l,
+                  value: response[l.language_code][index] || ""
+                }
+              })
+            }
+          })
+          props.onTranslateSuccess(languages, keyModels);
+        } else {
+          props.onTranslateSuccess(languages, []);
+        }
         setOKText("OK")
         setIsLoading(false)
       })
@@ -59,13 +64,13 @@ function ModalImportNewWord(props: { onTranslateSuccess: (languages: Language[],
   };
 
   const handleCancel = () => {
-    setIsModalOpen(false);
+    props.onCancel()
   };
 
   return (
     <Modal
       title="Import"
-      open={isModalOpen}
+      open={true}
       onOk={handleOk}
       okText={okText}
       onCancel={handleCancel}
@@ -119,6 +124,10 @@ function ImportNewWord() {
             setIsOpenReview(true)
             setReview({ languages: languages, keyModels: keyModels })
           }}
+          onCancel={ () => {
+            setIsModalOpen(false)
+          }
+        }
         />
       ) : (
         ""

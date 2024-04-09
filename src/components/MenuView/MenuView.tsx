@@ -1,12 +1,9 @@
 import React from 'react';
-import { AppstoreOutlined, MailOutlined, SettingOutlined } from '@ant-design/icons';
-import type { MenuProps } from 'antd';
-import { Menu } from 'antd';
-import {useDispatch, useSelector} from "react-redux";
-import {RootState} from "../../redux/store";
+import type {MenuProps} from 'antd';
+import {Menu} from 'antd';
+import {useDispatch} from "react-redux";
 import {ItemType} from "antd/es/menu/hooks/useItems";
-import AuthService from '../../services/AuthService';
-import { Language } from '../../models/Language';
+import {Language} from '../../models/Language';
 
 type MenuItem = Required<MenuProps>['items'][number];
 

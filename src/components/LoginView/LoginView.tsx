@@ -4,7 +4,7 @@ import {ChangeEvent, useEffect, useState} from "react";
 import AuthService from "../../services/AuthService";
 import { useNavigate } from "react-router";
 import { useDispatch } from "react-redux";
-import { updateUser } from "../../redux/user.redux";
+import { updateUser } from "../../redux/user.slice";
 
 
 function LoginView() {
@@ -16,13 +16,29 @@ function LoginView() {
 
   const dispatch = useDispatch()
 
+  useEffect(() => {
+    if (AuthService.shared.currentUser) {
+      navigate("/")
+      return;
+    }
+    AuthService.shared.checkAuthenticate()
+      .then(user => {
+        if (user) {
+          navigate("/")
+        }
+      })
+      .catch(error => {
+
+      })
+  }, [])
+
   function onClick() {
     setLoading(true)
 
     AuthService.shared.login(username, password)
     .then( success => {
-      setLoading(false)
       dispatch(updateUser(AuthService.shared.currentUser))
+      setLoading(false)
       navigate("/")
     })
     .catch(error => {

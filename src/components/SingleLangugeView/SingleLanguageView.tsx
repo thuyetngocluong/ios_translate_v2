@@ -1,26 +1,14 @@
-import React, { useEffect, useState } from "react";
-import {
-  Button,
-  Dropdown,
-  FloatButton,
-  Input,
-  MenuProps,
-  Modal,
-  Space,
-  Table,
-  Typography,
-} from "antd";
-import { useDispatch, useSelector } from "react-redux";
-import { RootState, useAppDispatch } from "../../redux/store";
+import React, {useState} from "react";
+import {Button, Modal, Space, Table, Typography,} from "antd";
+import {useAppDispatch} from "../../redux/store";
 
 import Search from "antd/es/input/Search";
-import { throttle } from "lodash";
+import {throttle} from "lodash";
 import TextArea from "antd/es/input/TextArea";
 import AuthService from "../../services/AuthService";
-import { Language } from "../../models/Language";
-import { KeyModel } from "../../models/Key";
+import {KeyModel} from "../../models/Key";
 import KeyService from "../../services/KeyService";
-import { fetchKeys } from "../../redux/key.slice";
+import {fetchKeys} from "../../redux/key.slice";
 
 function CopyStateButton(props: { onClickCopy: () => void }) {
   const [text, setText] = useState("Copy");
@@ -224,7 +212,7 @@ function SingleLanguageView(props: {
       },
     ];
 
-    let localization = AuthService.shared.currentUser?.preferred_languages.find(
+    let localization = AuthService.shared.selectedApplication()?.languages.find(
       (localization) => localization.language_code === props.languageCode
     );
 
@@ -247,7 +235,7 @@ function SingleLanguageView(props: {
       }
       return key.toLowerCase().includes(searchText.toLowerCase());
     };
-    console.log("OKOKOKOK", props.keyModels)
+
     const remaked = props.keyModels.map((e) => {
       const newObject: any = Object.assign({}, e);
       newObject.en = e.translates.find(

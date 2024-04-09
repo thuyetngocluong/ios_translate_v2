@@ -1,19 +1,21 @@
-import { applyMiddleware, configureStore } from '@reduxjs/toolkit';
-import { User } from '../models/User';
-import userRedux from './user.redux';
-import keyModelsRedux, { KeyState } from './key.slice';
-import { KeyModel } from '../models/Key';
-import { useDispatch } from 'react-redux';
+import {configureStore} from '@reduxjs/toolkit';
+import {User} from '../models/User';
+import userRedux, {UserState} from './user.slice';
+import keyModelsRedux, {KeyState} from './key.slice';
+import applicationSlice, {ApplicationState} from "./application.slice";
+import {useDispatch} from 'react-redux';
 
 export interface RootState {
-  user: User | null
+  user: UserState
   keyModels: KeyState
+  selectedApplication: ApplicationState
 }
 
 const store = configureStore({
   reducer: {
     user: userRedux,
     keyModels: keyModelsRedux,
+    selectedApplication: applicationSlice
   },
 });
 

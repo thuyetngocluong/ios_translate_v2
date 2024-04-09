@@ -20,7 +20,6 @@ const keySlice = createSlice({
   },
   extraReducers: (builder) => {
     builder.addCase(fetchKeys.fulfilled, (state, action) => {
-      console.log(action.payload)
       state.value = action.payload;
     });
   },

@@ -1,7 +1,6 @@
 import { RawAxiosRequestHeaders, AxiosHeaders } from "axios";
 
 
-const ALL_LANGUAGE_CODES = []
 const SERVER_HOST = "http://localhost:1337"
 
 export default {
@@ -13,5 +12,9 @@ export default {
         return {
             Authorization: "Bearer " + localStorage.getItem("token")
         } as (RawAxiosRequestHeaders) | AxiosHeaders;
+    },
+
+    currentApplicationID: () => {
+        return localStorage.getItem("applicationID")
     }
 }

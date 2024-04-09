@@ -10,9 +10,8 @@ class KeyService {
     try {
       const response = await axios.get(Const.serverURL("/api/translates-all"), {
         headers: Const.headers(),
-        params: { applicationID: 1 },
+        params: { applicationID: Const.currentApplicationID() },
       });
-      console.log("RESPONSE", response);
 
       if (response.status === 200) {
         return response.data;
@@ -26,9 +25,9 @@ class KeyService {
 
   async createOrUpdate(keys: KeyModel[]): Promise<void> {
     for (let i = 0; i < keys.length; i++) {
-      var key = keys[i];
+      const key = keys[i];
       if (!key.application || !key.application.id) {
-        const application = AuthService.shared.currentUser?.applications[0]
+        const application = AuthService.shared.currentUser?.applications.find(e => e.id.toString() === Const.currentApplicationID())
         if (application) {
           key.application = application
         } else {
@@ -37,10 +36,10 @@ class KeyService {
       }
       key.unique = `${key.application.id}_${key.key}`;
 
-      var data: any = Object.assign({}, key);
+      const data: any = Object.assign({}, key);
       
       try {
-        const resopnse = await axios.post(
+        const response = await axios.post(
           Const.serverURL("/api/create-or-update-key"),
           {
             data: data,
@@ -49,7 +48,7 @@ class KeyService {
             headers: Const.headers(),
           }
         );
-        console.log(resopnse.data);
+        console.log(response.data);
       } catch {}
     }
   }

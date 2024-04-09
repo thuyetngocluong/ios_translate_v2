@@ -1,9 +1,8 @@
 import axios from "axios";
 import Const from "../Utils/Const";
-import { User } from "../models/User";
-import { useDispatch } from "react-redux";
-import { updateUser } from "../redux/user.redux";
-import { Language } from "../models/Language";
+import {User} from "../models/User";
+import {Language} from "../models/Language";
+import {Application} from "../models/Application";
 
 class AuthService {
     
@@ -13,7 +12,11 @@ class AuthService {
 
     currentUser: (User | null) = null
 
-    async checkAuthenticate(): Promise<boolean> {
+    selectedApplication(): Application | null {
+        return this.currentUser?.applications.find(e => e.id.toString() === Const.currentApplicationID()) || null
+    }
+
+    async checkAuthenticate(): Promise<(User | null)> {
         try {
             let response = await axios.get(
                 Const.serverURL("/api/me"),
@@ -26,18 +29,13 @@ class AuthService {
             let me = response.data
             if (me) {
                 this.currentUser = me
-                // this.dispatch(updateUser(me))
-                return true
             } else {
                 this.currentUser = null
-                // this.dispatch(updateUser(null))
-                return false
             }
         } catch(e: any) {
             this.currentUser = null
-            // this.dispatch(updateUser(null))
-            return false
         }
+        return this.currentUser
     }
 
     async login(username: string, password: string): Promise<boolean> {
@@ -50,22 +48,22 @@ class AuthService {
         )
         if (response.data.jwt) {
             localStorage.setItem("token", response.data.jwt)
-            return await this.checkAuthenticate()
+            return await this.checkAuthenticate() != null
         }
         return false
     }
 
-    async logout() {
+    logout() {
         this.currentUser = null
-        // this.dispatch(updateUser(null))
         localStorage.removeItem("token")
+        localStorage.removeItem("applicationID")
     }
 
     async updatePreferredLanguages(languages: Language[]): Promise<void> {
         const response = await axios.put(
-            Const.serverURL("/api/me"),
+            Const.serverURL("/api/application"),
             {
-                preferred_languages: languages
+                languages: languages
             },
             {
                 headers: Const.headers()
