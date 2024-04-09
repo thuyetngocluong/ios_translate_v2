@@ -16,9 +16,8 @@ function DataScreen() {
  
   const [languageCode, setLanagueCode] = useState("en");
 
-  const reloadKey = useSelector((state: RootState) => state.reloadState)
   const keyModels = useSelector((state: RootState) => state.keyModels.value)
-  const languages = useSelector((state: RootState) => state.user?.prefered_languages || []) 
+  const languages = useSelector((state: RootState) => state.user?.preferred_languages || [])
 
 
   const dispatch = useAppDispatch()

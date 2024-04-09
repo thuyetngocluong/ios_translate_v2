@@ -1,8 +1,5 @@
-import { createSlice, PayloadAction, createAsyncThunk } from "@reduxjs/toolkit";
-import { User } from "../models/User";
-import { KeyModel } from "../models/Key";
-import axios from "axios";
-import Const from "../Utils/Const";
+import {createAsyncThunk, createSlice} from "@reduxjs/toolkit";
+import {KeyModel} from "../models/Key";
 import KeyService from "../services/KeyService";
 
 export interface KeyState {
@@ -10,8 +7,7 @@ export interface KeyState {
 }
 
 export const fetchKeys = createAsyncThunk("key/fetch", async () =>  {
-  const response = await KeyService.shared.fetch();
-  return response
+  return await KeyService.shared.fetch()
 });
 
 const keySlice = createSlice({
@@ -20,12 +16,11 @@ const keySlice = createSlice({
     value: [],
   } as KeyState,
   reducers: {
-    // reloadKeyModel(state, action: PayloadAction<KeyModel[]>) {
-    //   state.value = action.payload
-    // }
+
   },
   extraReducers: (builder) => {
     builder.addCase(fetchKeys.fulfilled, (state, action) => {
+      console.log(action.payload)
       state.value = action.payload;
     });
   },

@@ -6,5 +6,5 @@ export interface User {
     username: string,
     email: string,
     applications: Application[],
-    prefered_languages: Language[]
+    preferred_languages: Language[]
 }

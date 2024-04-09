@@ -50,7 +50,6 @@ class AuthService {
         )
         if (response.data.jwt) {
             localStorage.setItem("token", response.data.jwt)
-            console.log(response.data.jwt)
             return await this.checkAuthenticate()
         }
         return false
@@ -66,7 +65,7 @@ class AuthService {
         const response = await axios.put(
             Const.serverURL("/api/me"),
             {
-                prefered_languages: languages
+                preferred_languages: languages
             },
             {
                 headers: Const.headers()

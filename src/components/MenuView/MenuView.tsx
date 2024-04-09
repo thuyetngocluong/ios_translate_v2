@@ -40,7 +40,6 @@ const MenuView = (props: MenuViewProps) => {
   }
 
   const onClick: MenuProps['onClick'] = (e) => {
-    console.log('click ', e);
     props.onSelectLanguageCode(e.key)
   };
 

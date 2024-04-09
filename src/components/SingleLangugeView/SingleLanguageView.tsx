@@ -159,15 +159,6 @@ function SingleLanguageView(props: {
     setSearchText(value);
   }, 500);
 
-  function onClickRecord(record: any) {
-    let source = record["key"] || "";
-    let destination = record["translated"] || "";
-
-    navigator.clipboard.writeText(
-      `"${source}"=${JSON.stringify(destination)};`
-    );
-  }
-
   function makeColumns() {
     let keyData = [
       {
@@ -194,13 +185,12 @@ function SingleLanguageView(props: {
         key: "##action##",
         width: !props.hidesDeleteButton ? 280 : 200,
         render: (_: any, record: any) => {
-          console.log("RENDER", record)
           return (
             <Space size="middle">
               <CopyStateButton
                 onClickCopy={() => {
-                  var source = record["key"] || "";
-                  var destination = record["translated"] || "";
+                  const source = record["key"] || "";
+                  const destination = record["translated"] || "";
 
                   navigator.clipboard.writeText(
                     `"${source}"=${JSON.stringify(destination)};`
@@ -212,16 +202,16 @@ function SingleLanguageView(props: {
                 getKey={() => record["key"] || ""}
                 getValue={() => record["translated"] || ""}
                 onModalChanged={(languageCode, oldKey, newKey, value) => {
-                  var model = props.keyModels.find(e => e.key === oldKey)
-                  
-                  var isChangedKey = oldKey != newKey
-                  var isChangedValue = model?.translates.find(e => e.language.language_code == languageCode)?.value != value
+                  const model = props.keyModels.find(e => e.key === oldKey);
+
+                  const isChangedKey = oldKey !== newKey
+                  const isChangedValue = model?.translates.find(e => e.language.language_code == languageCode)?.value != value
 
                   if (!isChangedKey && !isChangedValue) { return; }
 
-                  var copy = JSON.parse(JSON.stringify(props.keyModels)) as KeyModel[]
-                  var idx = copy.findIndex(e => e.key === oldKey)
-                  var idxTranslate = copy[idx].translates.findIndex(e => e.language.language_code == languageCode)
+                  const copy = JSON.parse(JSON.stringify(props.keyModels)) as KeyModel[]
+                  const idx = copy.findIndex(e => e.key === oldKey)
+                  const idxTranslate = copy[idx].translates.findIndex(e => e.language.language_code == languageCode)
                   copy[idx].key = newKey
                   copy[idx].translates[idxTranslate].value = value
                   props.onUpdateKeyModels([copy[idx]], copy)
@@ -234,7 +224,7 @@ function SingleLanguageView(props: {
       },
     ];
 
-    let localization = AuthService.shared.currentUser?.prefered_languages.find(
+    let localization = AuthService.shared.currentUser?.preferred_languages.find(
       (localization) => localization.language_code === props.languageCode
     );
 
@@ -257,14 +247,14 @@ function SingleLanguageView(props: {
       }
       return key.toLowerCase().includes(searchText.toLowerCase());
     };
-
+    console.log("OKOKOKOK", props.keyModels)
     const remaked = props.keyModels.map((e) => {
-      var newObject: any = Object.assign({}, e);
+      const newObject: any = Object.assign({}, e);
       newObject.en = e.translates.find(
-        (t) => t.language?.language_code == "en"
+        (t) => t.language?.language_code === "en"
       );
       newObject.translated = e.translates.find(
-        (t) => t.language?.language_code == props.languageCode
+        (t) => t.language?.language_code === props.languageCode
       );
       return newObject;
     });

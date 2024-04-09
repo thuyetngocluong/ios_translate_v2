@@ -8,14 +8,14 @@ class KeyService {
 
   async fetch(): Promise<KeyModel[]> {
     try {
-      const resopnse = await axios.get(Const.serverURL("/api/translates-all"), {
+      const response = await axios.get(Const.serverURL("/api/translates-all"), {
         headers: Const.headers(),
-        params: { applicationID: 2 },
+        params: { applicationID: 1 },
       });
-      console.log(resopnse.data);
+      console.log("RESPONSE", response);
 
-      if (resopnse.status == 200) {
-        return resopnse.data;
+      if (response.status === 200) {
+        return response.data;
       } else {
         return [];
       }

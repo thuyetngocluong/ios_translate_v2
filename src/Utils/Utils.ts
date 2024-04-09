@@ -43,7 +43,7 @@ export class Utils {
 
   private _exportToZip(keyModels: KeyModel[]) {
     const zip = new JSZip()
-    const languages = AuthService.shared.currentUser?.prefered_languages || []
+    const languages = AuthService.shared.currentUser?.preferred_languages || []
     languages.forEach(language => {
       var data: string[] = []
       keyModels

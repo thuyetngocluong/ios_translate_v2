@@ -13,7 +13,7 @@ import { updateUser } from "../../redux/user.redux";
 function SelectPreferLanguageView() {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedLanguageCodes, setSelectedLanguageCodes] = useState(
-      new Set((AuthService.shared.currentUser?.prefered_languages.map(e => e.language_code) || []))
+      new Set((AuthService.shared.currentUser?.preferred_languages.map(e => e.language_code) || []))
     );
 
     const dispatch = useDispatch()
