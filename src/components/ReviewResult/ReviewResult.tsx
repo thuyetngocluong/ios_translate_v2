@@ -59,8 +59,8 @@ function ReviewResult(props: {
             maxHeight="60vh"
             languageCode={languageCode}
             keyModels={keyModels}
-            onUpdateKeyModels={(keyModels) => {
-              setKeyModels(keyModels);
+            onUpdateKeyModels={(updatedKeyModels, fullKeyModels) => {
+              setKeyModels(fullKeyModels)
             }}
           />
         </Layout>

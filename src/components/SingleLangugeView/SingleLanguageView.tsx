@@ -151,7 +151,7 @@ function SingleLanguageView(props: {
   keyModels: KeyModel[]
   maxHeight: string
   hidesDeleteButton: boolean
-  onUpdateKeyModels: (keyModels: KeyModel[]) => void 
+  onUpdateKeyModels: (updatedKeyModels: KeyModel[], fullKeyModels: KeyModel[]) => void 
 }) {
   const [searchText, setSearchText] = useState("");
 
@@ -224,8 +224,7 @@ function SingleLanguageView(props: {
                   var idxTranslate = copy[idx].translates.findIndex(e => e.language.language_code == languageCode)
                   copy[idx].key = newKey
                   copy[idx].translates[idxTranslate].value = value
-
-                  props.onUpdateKeyModels(copy)
+                  props.onUpdateKeyModels([copy[idx]], copy)
                 }}
               />
               { !props.hidesDeleteButton ? <DeleteButton getKey={() => record["key"] || ""}/> : ""}

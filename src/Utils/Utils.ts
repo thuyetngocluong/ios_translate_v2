@@ -4,6 +4,7 @@ import AuthService from "../services/AuthService";
 import LanguageService from "../services/LanguageService";
 import { KeyModel } from "../models/Key";
 import KeyService from "../services/KeyService";
+import JSZip from "jszip";
 
 
 export class Utils {
@@ -26,37 +27,67 @@ export class Utils {
     var min = Math.ceil(1);
     var max = Math.floor(10000);
     return Math.floor(Math.random() * (max - min + 1)) + min;
+  
+  
+  }
+  async exportToZip() {
+    try {
+      const response = await KeyService.shared.fetch()
+      if (response && response.length !== 0) {
+        this._exportToZip(response)
+      }
+    } catch {
+
+    }
   }
 
-  // async syncToServer(languageTranslates: LanguageTranslate[]) {
-
-  //   var english = languageTranslates.find(e => e.languageCode == 'en')
-
-  //   for (let i = 0; i < languageTranslates.length; i++) {
-  //     var languageTranslate = languageTranslates[i]
-  //     var languageCode = languageTranslate.languageCode
+  private _exportToZip(keyModels: KeyModel[]) {
+    const zip = new JSZip()
+    const languages = AuthService.shared.currentUser?.prefered_languages || []
+    languages.forEach(language => {
+      var data: string[] = []
+      keyModels
+      .reverse()
+      .forEach(keyModel => {
+        let key = keyModel.key
+        let translated = keyModel.translates.find(e => e.language.language_code === language.language_code)?.value || ""
+        data.push(`"${key}"=${JSON.stringify(translated)};`)
+      })
       
-  //     for(let j = 0; j < languageTranslate.translate.length; j++) {
-  //       var item = languageTranslate.translate[j]
-  //       var key = item.key
-  //       var translated = item.value
-  //       let source = english?.translate.find(e => e.key === key)?.value || ""
-  //       try {
-  //         await TranslateService.shared.createOrUpdate({
-  //           key: key,
-  //           source: source,
-  //           translated: translated,
-  //           unique: "",
-  //           application: AuthService.shared.currentUser?.applications[0] as any,
-  //           language: LanguageService.shared.languages.find(e => e.language_code === languageCode) as any
-  //         })
-  //       } catch {
+      if (language.language_code === "nb" || language.language_code === "no") {
+        let folder = zip.folder(`nb-NO.lproj`)
+        folder?.file("Localizable.strings", data.join("\n"))
 
-  //       }
-  //     }
-  //   }
-  // }
+        folder = zip.folder(`nb`)
+        folder?.file("Localizable.strings", data.join("\n"))
 
+        folder = zip.folder(`no`)
+        folder?.file("Localizable.strings", data.join("\n"))
+      } else 
+      if (language.language_code === "pt") {
+        let folder = zip.folder(`pt-PT.lproj`)
+        folder?.file("Localizable.strings", data.join("\n"))
+      } else {
+        let folder = zip.folder(`${language.language_code}.lproj`)
+        folder?.file("Localizable.strings", data.join("\n"))
+      }
+    })
+
+    zip.generateAsync({ type: 'blob' }).then(blob => {
+      // Create a temporary link to trigger the download
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'result.zip';
+      document.body.appendChild(link);
+      link.click();
+
+      // Cleanup
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(link);
+    });
+  }
+  
   async exportToStringCatalog() {
     try {
       const response = await KeyService.shared.fetch()

@@ -26,7 +26,7 @@ function DataScreen() {
   useEffect(() => {
     console.log("RELOAD")
     dispatch(fetchKeys())
-  }, [reloadKey])
+  }, [])
 
 
   return (
@@ -49,8 +49,11 @@ function DataScreen() {
             maxHeight={'80vh'} 
             languageCode={languageCode} 
             keyModels={keyModels} 
-            onUpdateKeyModels={(keyModels) => {
-              
+            onUpdateKeyModels={(updatedKeyModels, fullKeyModels) => {
+                KeyService.shared.createOrUpdate(updatedKeyModels)
+                .then( r => {
+                  dispatch(fetchKeys())
+                })
             }}
             />
         </Layout>

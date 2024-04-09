@@ -83,6 +83,7 @@ function ModalImportNewWord(props: { onTranslateSuccess: (languages: Language[],
         <TextArea
           id="InputSetence_ImportNewWord"
           placeholder="Enter your sentences, separator by newline"
+          disabled={isLoading}
           style={{ height: "20vh" }}
           onChange={onInputChange}
         ></TextArea>

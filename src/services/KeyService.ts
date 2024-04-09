@@ -1,6 +1,7 @@
 import axios from "axios";
 import { KeyModel } from "../models/Key";
 import Const from "../Utils/Const";
+import AuthService from "./AuthService";
 
 class KeyService {
   static shared = new KeyService();
@@ -27,13 +28,17 @@ class KeyService {
     for (let i = 0; i < keys.length; i++) {
       var key = keys[i];
       if (!key.application || !key.application.id) {
-        continue;
+        const application = AuthService.shared.currentUser?.applications[0]
+        if (application) {
+          key.application = application
+        } else {
+          continue
+        }
       }
       key.unique = `${key.application.id}_${key.key}`;
 
       var data: any = Object.assign({}, key);
-      delete data.id;
-
+      
       try {
         const resopnse = await axios.post(
           Const.serverURL("/api/create-or-update-key"),

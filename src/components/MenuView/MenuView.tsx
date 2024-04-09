@@ -48,8 +48,8 @@ const MenuView = (props: MenuViewProps) => {
     <Menu 
       onClick={onClick}
       style={{ textAlign: 'left', maxHeight: '100%', overflowY: 'auto', backgroundColor: 'white' }}
-      defaultSelectedKeys={['1']}
-      defaultOpenKeys={['sub1']}
+      defaultSelectedKeys={['en']}
+      defaultOpenKeys={['en']}
       mode="inline"
       items={items(props.languages)}
     />

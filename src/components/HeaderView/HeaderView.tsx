@@ -8,7 +8,9 @@ import ImportNewWord from "./ImportNewWord";
 import { Utils } from "../../Utils/Utils";
 
 function ExportToStringZip() {
-  const onClickExport = () => {};
+  const onClickExport = () => {
+    Utils.shared.exportToZip()
+  };
   return (
     <Button type="primary" onClick={onClickExport}>
       Export To Zip File
