@@ -1,6 +1,8 @@
 import {Typography} from "antd";
 import {text} from "node:stream/consumers";
 
+import {v4} from "uuid";
+
 
 function HighlightText(props: {
     highlightTexts: string[]
@@ -17,9 +19,9 @@ function HighlightText(props: {
 
         return <Typography>
             {
-                parts.map(part => {
+                parts.map((part, idx) => {
                     if (highlightTexts.includes(part.toLowerCase())) {
-                        return <span style={{ color: 'white', backgroundColor:'blue', padding: '2px', borderRadius: '2px' }}>{part}</span>
+                        return <span key={idx.toString()} style={{ color: 'white', backgroundColor:'blue', padding: '2px', borderRadius: '2px' }}>{part}</span>
                     }
                     return part
                 })

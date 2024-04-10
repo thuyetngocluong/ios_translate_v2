@@ -2,8 +2,9 @@ import {Button, Flex, Modal} from "antd";
 import LanguageService from "../../services/LanguageService";
 import AuthService from "../../services/AuthService";
 import {useEffect, useState} from "react";
-import {useAppDispatch} from "../../redux/store";
+import {RootState, useAppDispatch} from "../../redux/store";
 import {reloadApplication} from "../../redux/application.slice";
+import {useSelector} from "react-redux";
 
 function SelectPreferLanguageView() {
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -11,7 +12,7 @@ function SelectPreferLanguageView() {
     const [selectedLanguageCodes, setSelectedLanguageCodes] = useState(
       new Set((AuthService.shared.selectedApplication()?.languages.map(e => e.language_code) || []))
     );
-
+    const selectedApplication = useSelector((state: RootState) => state.selectedApplication)
     const dispatch = useAppDispatch()
 
   useEffect(() => {
@@ -24,16 +25,19 @@ function SelectPreferLanguageView() {
   
     const handleOk = () => {
       const languages = LanguageService.shared.languages.filter(l => selectedLanguageCodes.has(l.language_code))
-      setIsLoading(true)
-      AuthService.shared.updatePreferredLanguages(languages)
-      .then(e => {
-        setIsLoading(false)
-        dispatch(reloadApplication())
-        setIsModalOpen(false);
-      })
-      .catch(e => {
-        setIsModalOpen(false);
-      })
+        const application = selectedApplication.value
+        if (application) {
+            setIsLoading(true)
+            AuthService.shared.updatePreferredLanguages(languages, application)
+                .then(e => {
+                    setIsLoading(false)
+                    dispatch(reloadApplication())
+                    setIsModalOpen(false);
+                })
+                .catch(e => {
+                    setIsModalOpen(false);
+                })
+        }
     };
   
     const handleCancel = () => {

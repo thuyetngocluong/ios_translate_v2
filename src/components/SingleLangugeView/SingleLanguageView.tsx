@@ -10,6 +10,7 @@ import {KeyModel} from "../../models/Key";
 import KeyService from "../../services/KeyService";
 import {fetchKeys} from "../../redux/key.slice";
 import HighlightText from "../HighlightText/HighlightText";
+import LanguageService from "../../services/LanguageService";
 
 function CopyStateButton(props: { onClickCopy: () => void }) {
     const [text, setText] = useState("Copy");
@@ -189,7 +190,7 @@ function SingleLanguageView(props: {
                                     const source = record["key"] || "";
                                     const destination = record["translated"] || "";
 
-                                    navigator.clipboard.writeText(
+                                    navigator.clipboard?.writeText(
                                         `"${source}"=${JSON.stringify(destination)};`
                                     );
                                 }}
@@ -223,7 +224,7 @@ function SingleLanguageView(props: {
             },
         ];
 
-        let localization = AuthService.shared.selectedApplication()?.languages.find(
+        let localization = LanguageService.shared.languages.find(
             (localization) => localization.language_code === props.languageCode
         );
 
@@ -294,6 +295,9 @@ function SingleLanguageView(props: {
                 pagination={{position: ["bottomCenter"], pageSize: 100}}
                 scroll={{y: `calc(${props.maxHeight} - 80px)`}}
                 style={{margin: "20px", maxHeight: `calc(${props.maxHeight} - 80px)`}}
+                rowKey={(record) => {
+                    return record["#"]
+                }}
             ></Table>
         </>
     );

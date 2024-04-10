@@ -15,62 +15,62 @@ import AuthService from "../services/AuthService";
 import Const from "../Utils/Const";
 
 function DataScreen() {
- 
-  const [languageCode, setLanagueCode] = useState("en");
 
-  const keyModels = useSelector((state: RootState) => state.keyModels.value)
-  const languages = useSelector((state: RootState) => state.selectedApplication.value?.languages || [])
-  const selectedApplication = useSelector((state: RootState) => state.selectedApplication.value);
+    const [languageCode, setLanagueCode] = useState("en");
 
-  const dispatch = useAppDispatch()
+    const keyModels = useSelector((state: RootState) => state.keyModels.value)
+    const selectedApplication = useSelector((state: RootState) => state.selectedApplication)
 
-  useEffect(() => {
-    console.log("RELOAD")
-    dispatch(fetchKeys())
-    LanguageService.shared.fetchLanguages().catch()
-    if (AuthService.shared.currentUser) {
-      let application = AuthService.shared.currentUser?.applications.find(e => e.id.toString() === Const.currentApplicationID())  || AuthService.shared.currentUser?.applications[0] || null
-      dispatch(setSelectApplication(application))
-    }
-  }, [dispatch])
+    const dispatch = useAppDispatch()
 
-  useEffect(() => {
-    dispatch(fetchKeys())
-    LanguageService.shared.fetchLanguages().catch()
-  }, [dispatch, selectedApplication]);
+    useEffect(() => {
+        console.log("RELOAD")
+        dispatch(fetchKeys())
+        LanguageService.shared.fetchLanguages().catch()
+        if (AuthService.shared.currentUser) {
+            let application = AuthService.shared.currentUser?.applications.find(e => e.id.toString() === Const.currentApplicationID()) || AuthService.shared.currentUser?.applications[0] || null
+            dispatch(setSelectApplication(application))
+        }
+    }, [dispatch])
+
+    useEffect(() => {
+        dispatch(fetchKeys())
+        LanguageService.shared.fetchLanguages().catch()
+    }, [dispatch, selectedApplication]);
 
 
-  return (
-    <Layout>
-      <Header style={{ height: "8vh", maxHeight: '10vh' }}>
-        <HeaderView/>
-      </Header>
-      <Layout>
-        <Sider style={{ height: "92vh",  backgroundColor: 'white'}}>
-          <MenuView
-            languages={languages}
-            onSelectLanguageCode={(languageCode) => {
-              setLanagueCode(languageCode);
-            }}
-          />
-        </Sider>
-        <Layout style={{ maxHeight: "92vh" }}>
-          <SingleLanguageView 
-          hidesDeleteButton={false}
-            maxHeight={'80vh'} 
-            languageCode={languageCode} 
-            keyModels={keyModels} 
-            onUpdateKeyModels={(updatedKeyModels, fullKeyModels) => {
-                KeyService.shared.createOrUpdate(updatedKeyModels)
-                .then( r => {
-                  dispatch(fetchKeys())
-                })
-            }}
-            />
+    return (
+        <Layout>
+            <Header style={{height: "8vh", maxHeight: '10vh'}}>
+                <HeaderView/>
+            </Header>
+            <Layout>
+                <Sider style={{height: "92vh", backgroundColor: 'white'}}>
+                    <MenuView
+                        maxHeight={'100%'}
+                        languages={selectedApplication.value?.languages || []}
+                        onSelectLanguageCode={(languageCode) => {
+                            setLanagueCode(languageCode);
+                        }}
+                    />
+                </Sider>
+                <Layout style={{maxHeight: "92vh"}}>
+                    <SingleLanguageView
+                        hidesDeleteButton={false}
+                        maxHeight={'80vh'}
+                        languageCode={languageCode}
+                        keyModels={keyModels}
+                        onUpdateKeyModels={(updatedKeyModels, fullKeyModels) => {
+                            KeyService.shared.createOrUpdate(updatedKeyModels, (str) => {})
+                                .then(r => {
+                                    dispatch(fetchKeys())
+                                })
+                        }}
+                    />
+                </Layout>
+            </Layout>
         </Layout>
-      </Layout>
-    </Layout>
-  );
+    );
 }
 
 export default DataScreen;

@@ -59,11 +59,12 @@ class AuthService {
         localStorage.removeItem("applicationID")
     }
 
-    async updatePreferredLanguages(languages: Language[]): Promise<void> {
+    async updatePreferredLanguages(languages: Language[], application: Application): Promise<void> {
         await axios.put(
             Const.serverURL("/api/application"),
             {
-                languages: languages
+                languages: languages,
+                applicationID: application.id
             },
             {
                 headers: Const.headers()

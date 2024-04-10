@@ -25,6 +25,7 @@ function getItem(
 
 
 interface MenuViewProps {
+  maxHeight: string
   languages: Language[],
   onSelectLanguageCode: (languageCode: string) => void
 }
@@ -43,7 +44,7 @@ const MenuView = (props: MenuViewProps) => {
   return (
     <Menu 
       onClick={onClick}
-      style={{ textAlign: 'left', maxHeight: '100%', overflowY: 'auto', backgroundColor: 'white' }}
+      style={{ textAlign: 'left', maxHeight: props.maxHeight, overflowY: 'auto', backgroundColor: 'white' }}
       defaultSelectedKeys={['en']}
       defaultOpenKeys={['en']}
       mode="inline"
