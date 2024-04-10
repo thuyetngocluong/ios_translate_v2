@@ -18,7 +18,7 @@ function ExportToStringZip() {
   };
   return (
     <Button type="primary" onClick={onClickExport}>
-      Export To Zip Fileremoteios
+      Export To Zip File
     </Button>
   );
 }

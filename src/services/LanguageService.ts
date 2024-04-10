@@ -53,6 +53,7 @@ class LanguageService {
 
   async translate(
     texts: string[],
+    context: string,
     languageCodes: string[],
     process: (text: string) => void
   ): Promise<any> {
@@ -67,7 +68,7 @@ class LanguageService {
       const chunk = chunked[i];
       try {
         let responses = await Promise.all(
-          chunk.map((e) => this._translate(e, languageCodes))
+          chunk.map((e) => this._translate(e, context, languageCodes))
         );
 
         current += chunk.length;
@@ -95,6 +96,7 @@ class LanguageService {
 
   private async _translate(
     text: string,
+    context: string,
     languageCodes: string[],
     tryCount: number = 1
   ): Promise<any> {
@@ -112,6 +114,7 @@ class LanguageService {
           Const.serverURL("/api/translate-text"),
           {
             text: text,
+            context: context,
             languageCodes: languageCodes,
           },
           {
@@ -123,17 +126,17 @@ class LanguageService {
       if (Object.values(response).includes((e: any) => {
         return Array.isArray(e) && (e.length === 0 || e.includes(""))
       })) {
-        return this._translate(text, languageCodes, tryCount - 1);
+        return this._translate(text, context, languageCodes, tryCount - 1);
       }
 
       if (!areSetsEqual(new Set(languageCodes), new Set(Object.keys(response)))) {
-        return this._translate(text, languageCodes, tryCount - 1);
+        return this._translate(text, context, languageCodes, tryCount - 1);
       }
       
       return response
 
     } catch {
-      return this._translate(text, languageCodes, tryCount - 1);
+      return this._translate(text, context, languageCodes, tryCount - 1);
     }
   }
 }

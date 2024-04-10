@@ -60,7 +60,7 @@ class AuthService {
     }
 
     async updatePreferredLanguages(languages: Language[]): Promise<void> {
-        const response = await axios.put(
+        await axios.put(
             Const.serverURL("/api/application"),
             {
                 languages: languages
@@ -68,7 +68,7 @@ class AuthService {
             {
                 headers: Const.headers()
             }
-        )
+        );
         await this.checkAuthenticate()
     }
 }
