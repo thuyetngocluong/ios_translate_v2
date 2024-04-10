@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "homepage": "https://thuyetngocluong.github.io/ios_translate_v2",
+
   "dependencies": {
     "@ant-design/icons": "^5.3.6",
     "@reduxjs/toolkit": "^2.2.1",
