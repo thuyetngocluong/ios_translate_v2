@@ -1,7 +1,7 @@
 import { RawAxiosRequestHeaders, AxiosHeaders } from "axios";
 
 
-const SERVER_HOST = "http://localhost:1337"
+const SERVER_HOST = "http://10.10.21.213:1337"
 
 export default {
     serverURL(path: string) : string {
